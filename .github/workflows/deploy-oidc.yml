@@ -1,0 +1,42 @@
+name: "Deploy DAB (OIDC Method)"
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Required for GitHub to request an OIDC JWT token
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Delete the 3 lines below if you moved databricks.yml out of my-simple-dab/ to the repo root
+    defaults:
+      run:
+        working-directory: my-simple-dab2
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate Bundle
+        run: databricks bundle validate -t dev
+
+      - name: Deploy Bundle
+        run: databricks bundle deploy -t dev
+
+      - name: Run Job
+        run: databricks bundle run hello_world_job3 -t dev
