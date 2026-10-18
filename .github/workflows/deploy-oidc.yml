@@ -16,7 +16,7 @@ jobs:
     # Delete the 3 lines below if you moved databricks.yml out of my-simple-dab/ to the repo root
     defaults:
       run:
-        working-directory: my-simple-dab2
+        working-directory: my-simple-dab3
 
     steps:
       - name: Checkout repository
